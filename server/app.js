@@ -41,12 +41,17 @@ io.on('connection', (socket) => {
         messages.push(message);
         io.emit('chat message', message);
         console.log("Working correctly");
+        console.log(message);
 
-
-        var handler = {
+        const handler = {
             get: function (target, name) {
                 const test = new Facade(target);
-                    test.getMessage();
+                const answer = test.getMessage().message;
+                console.log(answer);
+                if (messages.length >= MAX_AMOUNT) {
+                    messages.shift(answer);
+                }
+                messages.push(answer);
             }
         };
 

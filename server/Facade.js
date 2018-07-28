@@ -10,10 +10,11 @@ module.exports = class Facade{
     }
 
     getMessage(){
+        let answer;
         if(new isAddressedBot( this.message).containKeyword()){
             const bot = new Bot();
-            bot.create(new GetMessage(this.message).getMessage());
-
+            answer = bot.create(new GetMessage(this.message).getMessage());
+            return answer;
         }
     }
 
