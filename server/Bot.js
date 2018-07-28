@@ -39,14 +39,16 @@ function formMessage(quote) {
 class Quotes {
     constructor() {
         const quotesDB =require('./quotesStore');
-        this.message =formMessage(quotesDB[4].quote)(quotesDB[4].author);
+        const randomNum =getRandomInt(0,quotesDB.length);
+        this.message =formMessage(quotesDB[randomNum].quote)(quotesDB[randomNum].author);
     }
 }
 
 class Advise {
     constructor() {
         const adviseDB =require('./adviseStore');
-        this.message = adviseDB[4].advise;
+        const randomNum =getRandomInt(0,adviseDB.length);
+        this.message = adviseDB[randomNum].advise;
     }
 }
 
@@ -126,4 +128,8 @@ function isNote(message) {
     [method, keyword, ...other] = message.split(" ");
     return keyword === "Note" || keyword === "note"
 
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
 }
