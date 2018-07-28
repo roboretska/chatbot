@@ -1,4 +1,4 @@
-export const clone = [
+module.exports = [
    Object.assign({
        quote: "\"Кращий спосіб почати робити – перестати говорити і почати робити\"",
        author: "Уолт Дісней"
