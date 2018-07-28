@@ -52,15 +52,33 @@ class Advise {
 
 class MoneyExchange {
     constructor(message) {
+        const MoneyExchangerStore = require('./MoneyExchangerStore');
+
         console.log('MoneyExchange');
         [keyword, value, from, word, to] = message.split(" ");
         this.value =value;
         this.basicValute=from;
         this.defeninionValute = to;
+        this.message='';
+
+        const index = MoneyExchangerStore.findIndex(i => i.sell === this.basicValute && i.buy===this.defeninionValute);
+        const newValue = this.calculateExchangedMoney(MoneyExchangerStore[index].value);
+        this.formMessage(newValue);
+        console.log(this.message);
+
     }
 
+    calculateExchangedMoney(exchangeCourse){
+         return this.value * exchangeCourse
+    }
+
+    formMessage(newValue){
+        this.message=`${this.value} ${this.basicValute} = ${newValue} ${this.defeninionValute}`;
+    }
 
 }
+
+
 
 class Weather {
     constructor() {

@@ -3,15 +3,14 @@ const GetMessage = require('./GetMessage');
 const Bot = require('./Bot');
 
 
-
-module.exports = class Facade{
-    constructor(message){
+module.exports = class Facade {
+    constructor(message) {
         this.message = message;
     }
 
-    getMessage(){
+    getMessage() {
         let answer;
-        if(new isAddressedBot( this.message).containKeyword()){
+        if (new isAddressedBot(this.message).containKeyword()) {
             const bot = new Bot();
             answer = bot.create(new GetMessage(this.message).getMessage());
             console.log(this.formMessage(answer.message));
@@ -20,12 +19,14 @@ module.exports = class Facade{
         }
     }
 
-    formMessage(answer){
+    formMessage(answer) {
         return {
             name: 'bot',
             nick: 'bot',
-            time: `${new Date().getHours()}:${new Date().getMinutes()} ${new Date().getDay()}.${new Date().getMonth()}.${new Date().getFullYear()}` ,
+            time: `${new Date().getHours()}:${new Date().getMinutes()} ${new Date().getDay()}.${new Date().getMonth()}.${new Date().getFullYear()}`,
             text: answer
         }
     }
-}
+
+
+};
