@@ -39,6 +39,7 @@ io.on('connection', (socket) => {
             messages.shift();
         }
         messages.push(message);
+
         io.emit('chat message', message);
         console.log("Working correctly");
         console.log(message);
@@ -46,17 +47,21 @@ io.on('connection', (socket) => {
         const handler = {
             get: function (target, name) {
                 const test = new Facade(target);
-                const answer = test.getMessage().message;
+                const answer = test.getMessage();
                 console.log(answer);
                 if (messages.length >= MAX_AMOUNT) {
-                    messages.shift(answer);
+                    messages.shift();
                 }
                 messages.push(answer);
+                console.log(messages);
+                io.emit('chat message', answer);
+
             }
         };
 
         const aaa = new Proxy(message, handler);
         console.log(aaa.text);
+
 
     });
         socket.emit('chat history', messages);

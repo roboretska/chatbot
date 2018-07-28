@@ -14,9 +14,18 @@ module.exports = class Facade{
         if(new isAddressedBot( this.message).containKeyword()){
             const bot = new Bot();
             answer = bot.create(new GetMessage(this.message).getMessage());
-            return answer;
+            console.log(this.formMessage(answer.message));
+            return this.formMessage(answer.message);
+
         }
     }
 
-
+    formMessage(answer){
+        return {
+            name: 'bot',
+            nick: 'bot',
+            time: `${new Date().getHours()}:${new Date().getMinutes()} ${new Date().getDay()}.${new Date().getMonth()}.${new Date().getFullYear()}` ,
+            text: answer
+        }
+    }
 }
