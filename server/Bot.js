@@ -6,37 +6,75 @@ module.exports = class Bot {
         if (isQuotes(message)) {
             answerMessage = new Quotes();
             console.log('Im quote');
-        } else if (isAdvise(message)) {
-            answerMessage = new Advise();
-            console.log('Im advise')
+        }
+        else if (isNote(message)) {
+            answerMessage = new Note();
 
         }
         else if (isMoneyExchange(message)) {
-            console.log('Im money exchanger')
+            answerMessage = new MoneyExchange(message);
 
         } else if (isWeather(message)) {
-            console.log('Im forecast')
+            answerMessage = new Weather();
 
-        } else if (isNote(message)) {
-            console.log('Im note creator')
-
-        }
+        } else if (isAdvise(message)) {
+            answerMessage = new Advise();
+            console.log('Im advise')
+        }else{
+                console.log('Im note creator')
+        };
+        console.log(answerMessage);
         return answerMessage;
-    }
-}
 
+    }
+    };
+
+// curry function formMessage
+function formMessage(quote) {
+    return (autor) => {
+            return quote+" "+autor;
+    };
+}
 
 class Quotes {
     constructor() {
-        console.log('Quotes');
+        const quotesDB =require('./quotesStore');
+        this.message =formMessage(quotesDB[4].quote)(quotesDB[4].author);
     }
 }
 
 class Advise {
     constructor() {
-        console.log('Advise');
+        const adviseDB =require('./adviseStore');
+        this.message = adviseDB[4].advise;
     }
 }
+
+class MoneyExchange {
+    constructor(message) {
+        console.log('MoneyExchange');
+        [keyword, value, from, word, to] = message.split(" ");
+        this.value =value;
+        this.basicValute=from;
+        this.defeninionValute = to;
+    }
+
+
+}
+
+class Weather {
+    constructor() {
+        console.log('Weather');
+    }
+}
+
+class Note {
+    constructor() {
+        console.log('Note');
+    }
+}
+
+
 
 function isQuotes(message) {
     const [show, quote] = message.split(' ');

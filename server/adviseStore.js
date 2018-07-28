@@ -1,4 +1,4 @@
-export const clone = [
+module.exports = [
     Object.assign({
         advise: "\"Звертайте увагу на позитивні події\"",
     }),
