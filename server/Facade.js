@@ -11,6 +11,7 @@ module.exports = class Facade {
     getMessage() {
         let answer;
         if (new isAddressedBot(this.message).containKeyword()) {
+            console.log('BOT WORKING');
             const bot = new Bot();
             answer = bot.create(new GetMessage(this.message).getMessage());
             console.log(this.formMessage(answer.message));

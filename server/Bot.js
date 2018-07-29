@@ -21,8 +21,8 @@ module.exports = class Bot {
             answerMessage = new Advise();
             console.log('Im advise')
         }else{
-                console.log('Im note creator')
-        };
+                answerMessage = new UnknownCommand();
+        }
         console.log(answerMessage);
         return answerMessage;
 
@@ -94,7 +94,12 @@ class Note {
     }
 }
 
-
+class UnknownCommand{
+    constructor(){
+        this.message="Вибач, розробник не передбачив можливість розуміти" +
+            " вашу дивну мову, пиши, будь ласка, заздалегіть визначені команди";
+    }
+}
 
 function isQuotes(message) {
     const [show, quote] = message.split(' ');
