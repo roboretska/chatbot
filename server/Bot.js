@@ -91,8 +91,7 @@ class Note {
     constructor(message) {
         const [command, note, list] = message.split(" ");
         if(command==='Show'&& list==='list'){
-            this.showNotes();
-            this.message='Showing list';
+            this.formListMessage(this.showNotes());
         } else if(command==='Show'){
             this.message='Showing one note';
         }else if(command==='Save'){
@@ -130,8 +129,22 @@ class Note {
     }
     showNotes(){
         const noteStorage = require('./NotesStorage').array;
-        console.log(noteStorage);
+        const stringArray = noteStorage.map(item =>
+            `Title: "${item.title}",  Text: "${item.text}"`
+        );
+        return stringArray;
     }
+
+    formListMessage(list){
+        let message = list[0];
+        for(let i=1; i<list.length; i++){
+            message = message+"    |||    "+list[i];
+        }
+        console.log(message);
+        this.message = message;
+    }
+
+
 }
 
 class UnknownCommand{

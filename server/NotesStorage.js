@@ -1,10 +1,10 @@
 const NoteStorage = [
     {
-        title: 'Hi’',
+        title: 'Hi',
         text: 'Some blablabla'
     },
     {
-        title: 'Test’',
+        title: 'Test',
         text: 'Another blablablah'
     }
 ];
