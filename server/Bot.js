@@ -8,7 +8,7 @@ module.exports = class Bot {
             console.log('Im quote');
         }
         else if (isNote(message)) {
-            answerMessage = new Note();
+            answerMessage = new Note(message);
 
         }
         else if (isMoneyExchange(message)) {
@@ -23,7 +23,6 @@ module.exports = class Bot {
         }else{
                 answerMessage = new UnknownCommand();
         }
-        console.log(answerMessage);
         return answerMessage;
 
     }
@@ -89,8 +88,49 @@ class Weather {
 }
 
 class Note {
-    constructor() {
-        console.log('Note');
+    constructor(message) {
+        const [command, note, list] = message.split(" ");
+        if(command==='Show'&& list==='list'){
+            this.showNotes();
+            this.message='Showing list';
+        } else if(command==='Show'){
+            this.message='Showing one note';
+        }else if(command==='Save'){
+            const note= this.saveNoteParser(message);
+            if(note.title){
+            this.saveNote(note);
+            this.formSaveMessage(note);
+            }else{
+                this.message="Помилка! Для позначення заголовку та тексту записки використовуйте такі лапки: \"\"";
+            }
+        }else if(command==='Delete') {
+            this.message = 'Deleting one note';
+        }
+        console.log(this.message);
+    }
+
+    saveNoteParser(message){
+        // const note={};
+        const [comant, title, text, body] = message.split('\"');
+        const note= {
+            "title": title,
+            "text": body
+        };
+        console.log(note);
+        return note;
+
+    }
+    saveNote(note){
+        const noteStorage = require('./NotesStorage');
+        noteStorage.saveNote(note);
+        console.log(noteStorage);
+    }
+    formSaveMessage(note){
+        this.message=`Записту з заголовком "${note.title}" збережено`;
+    }
+    showNotes(){
+        const noteStorage = require('./NotesStorage').array;
+        console.log(noteStorage);
     }
 }
 
@@ -113,10 +153,6 @@ function isAdvise(message) {
 function isMoneyExchange(message) {
     [keyword, value, from, word, to] = message.split(" ");
     return keyword === "Convert" || keyword === "convert"
-    // console.log(value)
-    // console.log(from)
-    // console.log(to)
-
 }
 
 function isWeather(message) {

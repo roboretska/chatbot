@@ -42,18 +42,15 @@ io.on('connection', (socket) => {
 
         io.emit('chat message', message);
         console.log("Working correctly");
-        console.log(message);
 
         const handler = {
             get: function (target, name) {
                 const test = new Facade(target);
                 const answer = test.getMessage();
-                console.log(answer);
                 if (messages.length >= MAX_AMOUNT) {
                     messages.shift();
                 }
                 messages.push(answer);
-                console.log(messages);
                 io.emit('chat message', answer);
 
             }
