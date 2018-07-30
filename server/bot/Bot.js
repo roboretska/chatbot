@@ -65,7 +65,7 @@ function formMessage(quote) {
 
 class Quotes {
     constructor() {
-        const quotesDB = require('./quotesStore');
+        const quotesDB = require('../storages/quotesStore');
         const randomNum = getRandomInt(0, quotesDB.length);
         this.message = formMessage(quotesDB[randomNum].quote)(quotesDB[randomNum].author);
     }
@@ -73,7 +73,7 @@ class Quotes {
 
 class Advise {
     constructor() {
-        const adviseDB = require('./storages/adviseStore');
+        const adviseDB = require('../storages/adviseStore');
         const randomNum = getRandomInt(0, adviseDB.length);
         this.message = adviseDB[randomNum].advise;
     }
@@ -81,7 +81,7 @@ class Advise {
 
 class MoneyExchange {
     constructor(message) {
-        const MoneyExchangerStore = require('./storages/MoneyExchangerStore');
+        const MoneyExchangerStore = require('../storages/MoneyExchangerStore');
 
         console.log('MoneyExchange');
         [keyword, value, from, word, to] = message.split(" ");
@@ -133,7 +133,7 @@ class Weather {
     }
 
     findCityForecast(city) {
-        const WeatherStore = require('./storages/WeatherStore');
+        const WeatherStore = require('../storages/WeatherStore');
         const [result] = WeatherStore.filter(item => item.city === city);
         return result;
     }

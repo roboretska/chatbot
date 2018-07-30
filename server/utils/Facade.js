@@ -1,6 +1,6 @@
-const isAddressedBot = require('./BotValidation');
-const GetMessage = require('./storages/GetMessage');
-const Bot = require('./Bot');
+const isAddressedBot = require('../bot/BotValidation');
+const GetMessage = require('./GetMessage');
+const Bot = require('../bot/Bot');
 
 
 module.exports = class Facade {
