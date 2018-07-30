@@ -15,7 +15,7 @@ module.exports = class Bot {
             answerMessage = new MoneyExchange(message);
 
         } else if (isWeather(message)) {
-            answerMessage = new Weather();
+            answerMessage = new Weather(message);
 
         } else if (isAdvise(message)) {
             answerMessage = new Advise();
@@ -82,8 +82,59 @@ class MoneyExchange {
 
 
 class Weather {
-    constructor() {
-        console.log('Weather');
+    constructor(message) {
+
+        const city = this.getCity(message);
+        const day = this.getDay(message);
+        const cityForecast = this.findCityForecast(city);
+        this.findDayForecast(cityForecast, day);
+    }
+
+    findDayForecast(cityForecast, day){
+        console.log(cityForecast.forecast[day]);
+    }
+
+    findCityForecast(city){
+        const WeatherStore = require('./WeatherStore');
+        const result = WeatherStore.filter(item => item.city===city);
+        return result;
+    }
+
+    getCity(message) {
+        if (message.search(/Lviv/i) + 1) {
+            return "Lviv";
+        } else if (message.search(/Kyiv/i) + 1) {
+            return "Kyiv";
+        } else if (message.search(/Kharkiv/i) + 1) {
+            return "Kharkiv";
+        } else if (message.search(/Odessa/i) + 1) {
+            return "Odessa";
+        } else if (message.search(/Dnipro/i) + 1) {
+            return "Dnipro";
+        }
+    }
+
+    getDay(message){
+
+        if(message.search(/today/i)+1){
+            return "Today";
+        }else if(message.search(/tomorrow/i)+1){
+            return "Tomorrow";
+        }else if(message.search(/on Monday/i)+1){
+            return "Monday";
+        }else if(message.search(/on Tuesday/i)+1){
+            return "Tuesday";
+        }else if(message.search(/on Wednesday/i)+1){
+            return "Wednesday";
+        }else if(message.search(/on Thursday/i)+1){
+            return "Thursday";
+        }else if(message.search(/on Friday/i)+1){
+            return "Friday";
+        }else if(message.search(/on Saturday/i)+1){
+            return "Saturday";
+        }else if(message.search(/on Sunday/i)+1){
+            return "Sunday";
+        }
     }
 }
 
@@ -93,17 +144,21 @@ class Note {
         if(command==='Show'&& list==='list'){
             this.formListMessage(this.showNotes());
         } else if(command==='Show'){
-            this.message='Showing one note';
+            const title = this.noteParser(message);
+            this.showNote(title);
         }else if(command==='Save'){
             const note= this.saveNoteParser(message);
             if(note.title){
             this.saveNote(note);
             this.formSaveMessage(note);
             }else{
-                this.message="Помилка! Для позначення заголовку та тексту записки використовуйте такі лапки: \"\"";
+                this.message= this.errorMessage();
             }
         }else if(command==='Delete') {
-            this.message = 'Deleting one note';
+            const title =this.noteParser(message);
+            if(title){
+                this.deleteNote(title);
+            }
         }
         console.log(this.message);
     }
@@ -134,7 +189,6 @@ class Note {
         );
         return stringArray;
     }
-
     formListMessage(list){
         let message = list[0];
         for(let i=1; i<list.length; i++){
@@ -142,6 +196,23 @@ class Note {
         }
         console.log(message);
         this.message = message;
+    }
+    showNote(title) {
+        const note = require('./NotesStorage').getNote(title);
+        this.message = `Title: "${note.title}",   Text: "${note.text}"`
+    }
+    deleteNote(title){
+        const note = require('./NotesStorage').deleteNote(title);
+        this.message = `Note with title "${title}" has been deleted`
+    }
+
+    noteParser(message) {
+        const [comant, title] = message.split('\"');
+        return title;
+
+    }
+    errorMessage(){
+        return "Помилка! Для позначення заголовку та тексту записки використовуйте такі лапки: \"\"";
     }
 
 
