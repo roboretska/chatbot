@@ -1,27 +1,29 @@
-class NoteStorageClass{
-    constructor(){
-        this.NoteStorage=[]
+class NoteStorageClass {
+    constructor() {
+        this.NoteStorage = []
     }
-    getAll(){
+
+    getAll() {
         return this.NoteStorage;
     }
+
     saveNote(note) {
         this.NoteStorage.push(note)
     }
 
-    getNote(title){
-        const [note] = this.NoteStorage.filter(item => item.title===title);
+    getNote(title) {
+        const [note] = this.NoteStorage.filter(item => item.title === title);
         return note;
     }
 
-    deleteNote(title){
-        this.NoteStorage = this.NoteStorage.filter(item => item.title!==title);
+    deleteNote(title) {
+        this.NoteStorage = this.NoteStorage.filter(item => item.title !== title);
         console.log(NoteStorage);
         return true;
     }
 }
-const NoteStorage = new NoteStorageClass;
 
+const NoteStorage = new NoteStorageClass;
 
 
 //Factory method
@@ -110,12 +112,12 @@ class Weather {
     constructor(message) {
 
         const city = this.getCity(message);
-        if(city==="err"){
+        if (city === "err") {
             this.errorMessage();
             return
         }
         const day = this.getDay(message);
-        if(day==="err"){
+        if (day === "err") {
             this.errorMessage();
             return
         }
@@ -147,7 +149,7 @@ class Weather {
             return "Odessa";
         } else if (message.search(/Dnipro/i) + 1) {
             return "Dnipro";
-        }else return "err"
+        } else return "err"
     }
 
     getDay(message) {
@@ -172,7 +174,7 @@ class Weather {
             return "Sunday";
         } else return "err"
 
-}
+    }
 
     formMessage(city, day, temperature) {
         let dayText;
@@ -191,12 +193,12 @@ class Weather {
             dayText = "Saturday";
         } else if (day === "Sunday") {
             dayText = "Sunday";
-        }else  dayText = day;
+        } else dayText = day;
 
         this.message = `${dayText} in ${city} expext ${temperature}&#176C`;
     }
 
-    errorMessage(){
+    errorMessage() {
         this.message = "Unexpected value. Please, enter correct data."
     }
 }
@@ -205,7 +207,12 @@ class Note {
     constructor(message) {
         const [command, note, list] = message.split(" ");
         if (command === 'Show' && list === 'list') {
-            this.formListMessage(this.showNotes());
+            const notes = this.showNotes();
+            if (notes.length > 0) {
+                this.formListMessage(notes);
+            } else {
+                this.message = "Seems like you haven't notes yet"
+            }
         } else if (command === 'Show') {
             const title = this.noteParser(message);
             this.showNote(title);
@@ -241,8 +248,6 @@ class Note {
 
     saveNote(note) {
         const noteStorage = NoteStorage.saveNote(note);
-        console.log(noteStorage);
-
     }
 
     formSaveMessage(note) {
@@ -251,14 +256,15 @@ class Note {
 
     showNotes() {
         const noteStorage = NoteStorage.getAll();
-        if(!noteStorage){
-            this.message="Seems like you haven't notes yet"
+        let stringArray;
+        if (noteStorage.length === 0) {
+            console.log('Im empty');
+            stringArray = noteStorage;
+        } else {
+            stringArray = noteStorage.map(item =>
+                `Title: "${item.title}",  Text: "${item.text}"`
+            );
         }
-        const stringArray = noteStorage.map(item =>
-            `Title: "${item.title}",  Text: "${item.text}"`
-        );
-        console.log(stringArray)
-
         return stringArray;
     }
 
@@ -273,10 +279,11 @@ class Note {
 
     showNote(title) {
         const note = NoteStorage.getNote(title);
-        if(!note){
-            this.message="Note with this title doesn't exist"
+        if (!note) {
+            this.message = "Note with this title doesn't exist"
+        }else {
+            this.message = `Title: "${note.title}",   Text: "${note.text}"`
         }
-        this.message = `Title: "${note.title}",   Text: "${note.text}"`
     }
 
     deleteNote(title) {
@@ -296,7 +303,6 @@ class Note {
 
 
 }
-
 
 
 class UnknownCommand {
