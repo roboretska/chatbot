@@ -1,5 +1,5 @@
 const isAddressedBot = require('./BotValidation');
-const GetMessage = require('./GetMessage');
+const GetMessage = require('./storages/GetMessage');
 const Bot = require('./Bot');
 
 

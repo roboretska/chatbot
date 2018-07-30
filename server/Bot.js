@@ -1,3 +1,29 @@
+class NoteStorageClass{
+    constructor(){
+        this.NoteStorage=[]
+    }
+    getAll(){
+        return this.NoteStorage;
+    }
+    saveNote(note) {
+        this.NoteStorage.push(note)
+    }
+
+    getNote(title){
+        const [note] = this.NoteStorage.filter(item => item.title===title);
+        return note;
+    }
+
+    deleteNote(title){
+        this.NoteStorage = this.NoteStorage.filter(item => item.title!==title);
+        console.log(NoteStorage);
+        return true;
+    }
+}
+const NoteStorage = new NoteStorageClass;
+
+
+
 //Factory method
 module.exports = class Bot {
     create(message) {
@@ -45,7 +71,7 @@ class Quotes {
 
 class Advise {
     constructor() {
-        const adviseDB = require('./adviseStore');
+        const adviseDB = require('./storages/adviseStore');
         const randomNum = getRandomInt(0, adviseDB.length);
         this.message = adviseDB[randomNum].advise;
     }
@@ -53,7 +79,7 @@ class Advise {
 
 class MoneyExchange {
     constructor(message) {
-        const MoneyExchangerStore = require('./MoneyExchangerStore');
+        const MoneyExchangerStore = require('./storages/MoneyExchangerStore');
 
         console.log('MoneyExchange');
         [keyword, value, from, word, to] = message.split(" ");
@@ -84,7 +110,15 @@ class Weather {
     constructor(message) {
 
         const city = this.getCity(message);
+        if(city==="err"){
+            this.errorMessage();
+            return
+        }
         const day = this.getDay(message);
+        if(day==="err"){
+            this.errorMessage();
+            return
+        }
         const cityForecast = this.findCityForecast(city);
         const temperature = this.findDayForecast(cityForecast, day);
         this.formMessage(city, day, temperature);
@@ -97,7 +131,7 @@ class Weather {
     }
 
     findCityForecast(city) {
-        const WeatherStore = require('./WeatherStore');
+        const WeatherStore = require('./storages/WeatherStore');
         const [result] = WeatherStore.filter(item => item.city === city);
         return result;
     }
@@ -113,7 +147,7 @@ class Weather {
             return "Odessa";
         } else if (message.search(/Dnipro/i) + 1) {
             return "Dnipro";
-        }
+        }else return "err"
     }
 
     getDay(message) {
@@ -136,8 +170,9 @@ class Weather {
             return "Saturday";
         } else if (message.search(/on Sunday/i) + 1) {
             return "Sunday";
-        }
-    }
+        } else return "err"
+
+}
 
     formMessage(city, day, temperature) {
         let dayText;
@@ -159,6 +194,10 @@ class Weather {
         }else  dayText = day;
 
         this.message = `${dayText} in ${city} expext ${temperature}&#176C`;
+    }
+
+    errorMessage(){
+        this.message = "Unexpected value. Please, enter correct data."
     }
 }
 
@@ -184,6 +223,7 @@ class Note {
                 this.deleteNote(title);
             }
         }
+        console.log("End off class");
         console.log(this.message);
     }
 
@@ -200,9 +240,9 @@ class Note {
     }
 
     saveNote(note) {
-        const noteStorage = require('./NotesStorage');
-        noteStorage.saveNote(note);
+        const noteStorage = NoteStorage.saveNote(note);
         console.log(noteStorage);
+
     }
 
     formSaveMessage(note) {
@@ -210,10 +250,15 @@ class Note {
     }
 
     showNotes() {
-        const noteStorage = require('./NotesStorage').array;
+        const noteStorage = NoteStorage.getAll();
+        if(!noteStorage){
+            this.message="Seems like you haven't notes yet"
+        }
         const stringArray = noteStorage.map(item =>
             `Title: "${item.title}",  Text: "${item.text}"`
         );
+        console.log(stringArray)
+
         return stringArray;
     }
 
@@ -227,12 +272,15 @@ class Note {
     }
 
     showNote(title) {
-        const note = require('./NotesStorage').getNote(title);
+        const note = NoteStorage.getNote(title);
+        if(!note){
+            this.message="Note with this title doesn't exist"
+        }
         this.message = `Title: "${note.title}",   Text: "${note.text}"`
     }
 
     deleteNote(title) {
-        const note = require('./NotesStorage').deleteNote(title);
+        const note = NoteStorage.deleteNote(title);
         this.message = `Note with title "${title}" has been deleted`
     }
 
@@ -248,6 +296,8 @@ class Note {
 
 
 }
+
+
 
 class UnknownCommand {
     constructor() {
