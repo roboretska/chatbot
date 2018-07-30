@@ -20,33 +20,33 @@ module.exports = class Bot {
         } else if (isAdvise(message)) {
             answerMessage = new Advise();
             console.log('Im advise')
-        }else{
-                answerMessage = new UnknownCommand();
+        } else {
+            answerMessage = new UnknownCommand();
         }
         return answerMessage;
 
     }
-    };
+};
 
 // curry function formMessage
 function formMessage(quote) {
     return (autor) => {
-            return quote+" "+autor;
+        return quote + " " + autor;
     };
 }
 
 class Quotes {
     constructor() {
-        const quotesDB =require('./quotesStore');
-        const randomNum =getRandomInt(0,quotesDB.length);
-        this.message =formMessage(quotesDB[randomNum].quote)(quotesDB[randomNum].author);
+        const quotesDB = require('./quotesStore');
+        const randomNum = getRandomInt(0, quotesDB.length);
+        this.message = formMessage(quotesDB[randomNum].quote)(quotesDB[randomNum].author);
     }
 }
 
 class Advise {
     constructor() {
-        const adviseDB =require('./adviseStore');
-        const randomNum =getRandomInt(0,adviseDB.length);
+        const adviseDB = require('./adviseStore');
+        const randomNum = getRandomInt(0, adviseDB.length);
         this.message = adviseDB[randomNum].advise;
     }
 }
@@ -57,28 +57,27 @@ class MoneyExchange {
 
         console.log('MoneyExchange');
         [keyword, value, from, word, to] = message.split(" ");
-        this.value =value;
-        this.basicValute=from;
+        this.value = value;
+        this.basicValute = from;
         this.defeninionValute = to;
-        this.message='';
+        this.message = '';
 
-        const index = MoneyExchangerStore.findIndex(i => i.sell === this.basicValute && i.buy===this.defeninionValute);
+        const index = MoneyExchangerStore.findIndex(i => i.sell === this.basicValute && i.buy === this.defeninionValute);
         const newValue = this.calculateExchangedMoney(MoneyExchangerStore[index].value);
         this.formMessage(newValue);
         console.log(this.message);
 
     }
 
-    calculateExchangedMoney(exchangeCourse){
-         return this.value * exchangeCourse
+    calculateExchangedMoney(exchangeCourse) {
+        return this.value * exchangeCourse
     }
 
-    formMessage(newValue){
-        this.message=`${this.value} ${this.basicValute} = ${newValue} ${this.defeninionValute}`;
+    formMessage(newValue) {
+        this.message = `${this.value} ${this.basicValute} = ${newValue} ${this.defeninionValute}`;
     }
 
 }
-
 
 
 class Weather {
@@ -87,16 +86,19 @@ class Weather {
         const city = this.getCity(message);
         const day = this.getDay(message);
         const cityForecast = this.findCityForecast(city);
-        this.findDayForecast(cityForecast, day);
+        const temperature = this.findDayForecast(cityForecast, day);
+        this.formMessage(city, day, temperature);
     }
 
-    findDayForecast(cityForecast, day){
-        console.log(cityForecast.forecast[day]);
+
+    findDayForecast(cityForecast, day) {
+        return cityForecast.forecast[day];
+
     }
 
-    findCityForecast(city){
+    findCityForecast(city) {
         const WeatherStore = require('./WeatherStore');
-        const result = WeatherStore.filter(item => item.city===city);
+        const [result] = WeatherStore.filter(item => item.city === city);
         return result;
     }
 
@@ -114,59 +116,81 @@ class Weather {
         }
     }
 
-    getDay(message){
+    getDay(message) {
 
-        if(message.search(/today/i)+1){
+        if (message.search(/today/i) + 1) {
             return "Today";
-        }else if(message.search(/tomorrow/i)+1){
+        } else if (message.search(/tomorrow/i) + 1) {
             return "Tomorrow";
-        }else if(message.search(/on Monday/i)+1){
+        } else if (message.search(/on Monday/i) + 1) {
             return "Monday";
-        }else if(message.search(/on Tuesday/i)+1){
+        } else if (message.search(/on Tuesday/i) + 1) {
             return "Tuesday";
-        }else if(message.search(/on Wednesday/i)+1){
+        } else if (message.search(/on Wednesday/i) + 1) {
             return "Wednesday";
-        }else if(message.search(/on Thursday/i)+1){
+        } else if (message.search(/on Thursday/i) + 1) {
             return "Thursday";
-        }else if(message.search(/on Friday/i)+1){
+        } else if (message.search(/on Friday/i) + 1) {
             return "Friday";
-        }else if(message.search(/on Saturday/i)+1){
+        } else if (message.search(/on Saturday/i) + 1) {
             return "Saturday";
-        }else if(message.search(/on Sunday/i)+1){
+        } else if (message.search(/on Sunday/i) + 1) {
             return "Sunday";
         }
+    }
+
+    formMessage(city, day, temperature) {
+        let dayText;
+
+        if (day === "Monday") {
+            dayText = "On monday";
+        } else if (day === "Tuesday") {
+            dayText = "On tuesday";
+        } else if (day === "Wednesday") {
+            dayText = "On wednesday";
+        } else if (day === "Thursday") {
+            dayText = "On thursday";
+        } else if (day === "Friday") {
+            dayText = "Friday";
+        } else if (day === "Saturday") {
+            dayText = "Saturday";
+        } else if (day === "Sunday") {
+            dayText = "Sunday";
+        }else  dayText = day;
+
+        this.message = `${dayText} in ${city} expext ${temperature}&#176C`;
     }
 }
 
 class Note {
     constructor(message) {
         const [command, note, list] = message.split(" ");
-        if(command==='Show'&& list==='list'){
+        if (command === 'Show' && list === 'list') {
             this.formListMessage(this.showNotes());
-        } else if(command==='Show'){
+        } else if (command === 'Show') {
             const title = this.noteParser(message);
             this.showNote(title);
-        }else if(command==='Save'){
-            const note= this.saveNoteParser(message);
-            if(note.title){
-            this.saveNote(note);
-            this.formSaveMessage(note);
-            }else{
-                this.message= this.errorMessage();
+        } else if (command === 'Save') {
+            const note = this.saveNoteParser(message);
+            if (note.title) {
+                this.saveNote(note);
+                this.formSaveMessage(note);
+            } else {
+                this.message = this.errorMessage();
             }
-        }else if(command==='Delete') {
-            const title =this.noteParser(message);
-            if(title){
+        } else if (command === 'Delete') {
+            const title = this.noteParser(message);
+            if (title) {
                 this.deleteNote(title);
             }
         }
         console.log(this.message);
     }
 
-    saveNoteParser(message){
+    saveNoteParser(message) {
         // const note={};
         const [comant, title, text, body] = message.split('\"');
-        const note= {
+        const note = {
             "title": title,
             "text": body
         };
@@ -174,34 +198,40 @@ class Note {
         return note;
 
     }
-    saveNote(note){
+
+    saveNote(note) {
         const noteStorage = require('./NotesStorage');
         noteStorage.saveNote(note);
         console.log(noteStorage);
     }
-    formSaveMessage(note){
-        this.message=`Записту з заголовком "${note.title}" збережено`;
+
+    formSaveMessage(note) {
+        this.message = `Записту з заголовком "${note.title}" збережено`;
     }
-    showNotes(){
+
+    showNotes() {
         const noteStorage = require('./NotesStorage').array;
         const stringArray = noteStorage.map(item =>
             `Title: "${item.title}",  Text: "${item.text}"`
         );
         return stringArray;
     }
-    formListMessage(list){
+
+    formListMessage(list) {
         let message = list[0];
-        for(let i=1; i<list.length; i++){
-            message = message+"    |||    "+list[i];
+        for (let i = 1; i < list.length; i++) {
+            message = message + "    |||    " + list[i];
         }
         console.log(message);
         this.message = message;
     }
+
     showNote(title) {
         const note = require('./NotesStorage').getNote(title);
         this.message = `Title: "${note.title}",   Text: "${note.text}"`
     }
-    deleteNote(title){
+
+    deleteNote(title) {
         const note = require('./NotesStorage').deleteNote(title);
         this.message = `Note with title "${title}" has been deleted`
     }
@@ -211,16 +241,17 @@ class Note {
         return title;
 
     }
-    errorMessage(){
+
+    errorMessage() {
         return "Помилка! Для позначення заголовку та тексту записки використовуйте такі лапки: \"\"";
     }
 
 
 }
 
-class UnknownCommand{
-    constructor(){
-        this.message="Вибач, розробник не передбачив можливість розуміти" +
+class UnknownCommand {
+    constructor() {
+        this.message = "Вибач, розробник не передбачив можливість розуміти" +
             " вашу дивну мову, пиши, будь ласка, заздалегіть визначені команди";
     }
 }
@@ -240,9 +271,9 @@ function isMoneyExchange(message) {
 }
 
 function isWeather(message) {
-    if(message.search(/weather/i)=== -1) {
+    if (message.search(/weather/i) === -1) {
         return false
-    }else {
+    } else {
         return true
     }
 
